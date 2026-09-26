@@ -11,6 +11,7 @@ export function tryMove(
     kind: piece.kind,
     x: piece.x + dx,
     y: piece.y + dy,
+    rotation: piece.rotation ?? 0,
   };
 
   for (const { x, y } of getPieceCells(moved)) {
