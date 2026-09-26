@@ -1,6 +1,16 @@
 import type { GameState } from "./game.js";
+import type { ActivePiece } from "./piece.js";
 import { tryMove } from "./movement.js";
 import { tryRotate, type RotateDirection } from "./rotation.js";
+
+function stateWithPiece(state: GameState, piece: ActivePiece): GameState {
+  return {
+    grid: state.grid,
+    piece,
+    nextPiece: state.nextPiece,
+    bag: state.bag,
+  };
+}
 
 export function moveActivePiece(state: GameState, dx: number, dy: number): GameState {
   const piece = state.piece;
@@ -10,18 +20,10 @@ export function moveActivePiece(state: GameState, dx: number, dy: number): GameS
 
   const moved = tryMove(piece, state.grid, dx, dy);
   if (moved === null) {
-    return {
-      grid: state.grid,
-      piece,
-      nextPiece: state.nextPiece,
-    };
+    return stateWithPiece(state, piece);
   }
 
-  return {
-    grid: state.grid,
-    piece: moved,
-    nextPiece: state.nextPiece,
-  };
+  return stateWithPiece(state, moved);
 }
 
 export function rotateActivePieceCounterClockwise(state: GameState): GameState {
@@ -36,16 +38,8 @@ export function rotateActivePiece(state: GameState, direction: RotateDirection):
 
   const rotated = tryRotate(piece, state.grid, direction);
   if (rotated === null) {
-    return {
-      grid: state.grid,
-      piece,
-      nextPiece: state.nextPiece,
-    };
+    return stateWithPiece(state, piece);
   }
 
-  return {
-    grid: state.grid,
-    piece: rotated,
-    nextPiece: state.nextPiece,
-  };
+  return stateWithPiece(state, rotated);
 }
