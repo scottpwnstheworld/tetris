@@ -6,6 +6,7 @@ import {
   type PlaySession,
 } from "./session.js";
 import {
+  formatScoreText,
   renderGameState,
   renderNextPiecePreview,
   resizeNextPreviewCanvas,
@@ -15,6 +16,7 @@ import {
 const canvas = document.getElementById("playfield");
 const nextPreviewCanvas = document.getElementById("next-preview");
 const status = document.getElementById("status");
+const scoreEl = document.getElementById("score");
 if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error("Missing #playfield canvas");
 }
@@ -23,6 +25,9 @@ if (!(nextPreviewCanvas instanceof HTMLCanvasElement)) {
 }
 if (!(status instanceof HTMLParagraphElement)) {
   throw new Error("Missing #status");
+}
+if (!(scoreEl instanceof HTMLParagraphElement)) {
+  throw new Error("Missing #score");
 }
 
 resizePlayfieldCanvas(canvas);
@@ -54,6 +59,7 @@ function updateStatus(): void {
 function draw(): void {
   renderGameState(ctx, session.state);
   renderNextPiecePreview(nextPreviewCtx, session.state.nextPiece);
+  scoreEl.textContent = formatScoreText(session.score);
   updateStatus();
 }
 
@@ -69,6 +75,7 @@ window.setInterval(() => {
   session = {
     state: result.state,
     gameOver: result.gameOver,
+    score: result.score,
   };
   draw();
 }, GRAVITY_MS);
@@ -93,6 +100,7 @@ function applyPlayAction(action: string): void {
     session = {
       state: result.state,
       gameOver: result.gameOver,
+      score: result.score,
     };
   } else {
     session = result;

@@ -107,3 +107,7 @@ export function renderGameState(ctx: CanvasRenderingContext2D, state: GameState)
     }
   }
 }
+
+export function formatScoreText(score: number): string {
+  return `Score: ${score}`;
+}

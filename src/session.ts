@@ -1,10 +1,20 @@
 import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
 import { moveActivePiece, rotateActivePieceCounterClockwise } from "./input.js";
+import { addLineClearScore } from "./score.js";
 
 export type PlaySession = {
   state: GameState;
   gameOver: boolean;
+  score: number;
 };
+
+function scoreAfterLineClear(session: PlaySession, linesCleared: number): number {
+  const current = session.score ?? 0;
+  if (linesCleared <= 0) {
+    return current;
+  }
+  return addLineClearScore(current, linesCleared);
+}
 
 export type StepPlayGravityResult = PlaySession & {
   linesCleared: number;
@@ -18,6 +28,7 @@ export function createPlaySession(): PlaySession {
   return {
     state: createGameState("T", "O"),
     gameOver: false,
+    score: 0,
   };
 }
 
@@ -47,6 +58,7 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
   return {
     state: nextState,
     gameOver: false,
+    score: session.score ?? 0,
   };
 }
 
@@ -69,6 +81,7 @@ export function handlePlayAction(
         state: result.state,
         gameOver: result.gameOver,
         linesCleared: result.linesCleared,
+        score: scoreAfterLineClear(session, result.linesCleared),
       };
     }
     default:
@@ -82,5 +95,6 @@ export function stepPlayGravity(session: PlaySession): StepPlayGravityResult {
     state: result.state,
     gameOver: result.gameOver,
     linesCleared: result.linesCleared,
+    score: scoreAfterLineClear(session, result.linesCleared),
   };
 }
