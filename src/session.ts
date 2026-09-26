@@ -35,8 +35,22 @@ export function createPlaySession(): PlaySession {
   };
 }
 
+export function restartPlaySession(session: PlaySession): PlaySession {
+  if (!session.gameOver) {
+    return session;
+  }
+  return createPlaySession();
+}
+
 export function handlePlayKey(session: PlaySession, key: string): PlaySession {
   if (session.gameOver) {
+    if (key === "Enter") {
+      return restartPlaySession(session);
+    }
+    return session;
+  }
+
+  if (key === "Enter") {
     return session;
   }
 
@@ -69,11 +83,18 @@ export function handlePlayAction(
   session: PlaySession,
   action: string,
 ): PlaySession | PlayActionResult {
-  if (session.gameOver) {
+  if (session.gameOver && action !== "restart") {
     return session;
   }
 
   switch (action) {
+    case "restart": {
+      if (!session.gameOver) {
+        return session;
+      }
+      const restarted = restartPlaySession(session);
+      return { ...restarted, linesCleared: 0 };
+    }
     case "rotate-ccw": {
       const next = handlePlayKey(session, "ArrowUp");
       return { ...next, linesCleared: 0 };
