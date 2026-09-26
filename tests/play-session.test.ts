@@ -28,6 +28,13 @@ describe("createPlaySession", () => {
       true,
     );
   });
+
+  it("queues the demo next piece kind for the preview panel", () => {
+    const session = createPlaySession();
+
+    expect(session.state.piece!.kind).toBe("T");
+    expect(session.state.nextPiece).toBe("O");
+  });
 });
 
 describe("handlePlayKey", () => {

@@ -4,21 +4,35 @@ import {
   stepPlayGravity,
   type PlaySession,
 } from "./session.js";
-import { renderGameState, resizePlayfieldCanvas } from "./render.js";
+import {
+  renderGameState,
+  renderNextPiecePreview,
+  resizeNextPreviewCanvas,
+  resizePlayfieldCanvas,
+} from "./render.js";
 
 const canvas = document.getElementById("playfield");
+const nextPreviewCanvas = document.getElementById("next-preview");
 const status = document.getElementById("status");
 if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error("Missing #playfield canvas");
+}
+if (!(nextPreviewCanvas instanceof HTMLCanvasElement)) {
+  throw new Error("Missing #next-preview canvas");
 }
 if (!(status instanceof HTMLParagraphElement)) {
   throw new Error("Missing #status");
 }
 
 resizePlayfieldCanvas(canvas);
+resizeNextPreviewCanvas(nextPreviewCanvas);
 const ctx = canvas.getContext("2d");
 if (ctx === null) {
   throw new Error("Could not get 2d context");
+}
+const nextPreviewCtx = nextPreviewCanvas.getContext("2d");
+if (nextPreviewCtx === null) {
+  throw new Error("Could not get next preview 2d context");
 }
 
 let session: PlaySession = createPlaySession();
@@ -38,6 +52,7 @@ function updateStatus(): void {
 
 function draw(): void {
   renderGameState(ctx, session.state);
+  renderNextPiecePreview(nextPreviewCtx, session.state.nextPiece);
   updateStatus();
 }
 

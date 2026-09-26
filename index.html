@@ -33,12 +33,22 @@
         color: #8a96a8;
         line-height: 1.5;
       }
+      .boards {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+      }
     </style>
   </head>
   <body>
     <main>
       <h1>Tetris</h1>
-      <canvas id="playfield" aria-label="Tetris playfield"></canvas>
+      <div class="boards">
+        <canvas id="playfield" aria-label="Tetris playfield"></canvas>
+        <canvas id="next-preview" aria-label="Next piece preview"></canvas>
+      </div>
       <p id="status">Loading…</p>
     </main>
     <script type="module" src="/src/main.ts"></script>
