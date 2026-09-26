@@ -59,15 +59,22 @@ export function tickGravity(state: GameState): TickGravityResult {
     };
   }
 
-  const { grid: clearedGrid, linesCleared } = clearFullLines(down.grid);
-  const spawned = spawnPiece(state.nextPiece);
+  return finishLockAndRespawn(down.grid, state.nextPiece);
+}
+
+function finishLockAndRespawn(
+  lockedGrid: Playfield,
+  nextPiece: PieceKind,
+): TickGravityResult {
+  const { grid: clearedGrid, linesCleared } = clearFullLines(lockedGrid);
+  const spawned = spawnPiece(nextPiece);
 
   if (!canPlacePiece(spawned, clearedGrid)) {
     return {
       state: {
         grid: clearedGrid,
         piece: null,
-        nextPiece: state.nextPiece,
+        nextPiece,
       },
       linesCleared,
       gameOver: true,
@@ -78,9 +85,28 @@ export function tickGravity(state: GameState): TickGravityResult {
     state: {
       grid: clearedGrid,
       piece: spawned,
-      nextPiece: state.nextPiece,
+      nextPiece,
     },
     linesCleared,
     gameOver: false,
   };
+}
+
+export function hardDrop(state: GameState): TickGravityResult {
+  const piece = state.piece;
+  if (piece === null) {
+    return { state, linesCleared: 0, gameOver: false };
+  }
+
+  let current = piece;
+  let grid = state.grid;
+  for (;;) {
+    const down = stepDown(current, grid);
+    if (down.piece !== null) {
+      current = down.piece;
+      grid = down.grid;
+      continue;
+    }
+    return finishLockAndRespawn(down.grid, state.nextPiece);
+  }
 }

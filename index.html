@@ -40,6 +40,27 @@
         align-items: flex-start;
         margin-bottom: 0.75rem;
       }
+      .touch-controls {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+      .touch-controls button {
+        font: inherit;
+        font-size: 0.95rem;
+        padding: 0.65rem 1.1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #3a4558;
+        background: #1a2030;
+        color: #c8d4e8;
+        touch-action: manipulation;
+        cursor: pointer;
+      }
+      .touch-controls button:active {
+        background: #2a3448;
+      }
     </style>
   </head>
   <body>
@@ -50,6 +71,10 @@
         <canvas id="next-preview" aria-label="Next piece preview"></canvas>
       </div>
       <p id="status">Loading…</p>
+      <div class="touch-controls" aria-label="Mobile play controls">
+        <button type="button" data-play-action="rotate-ccw">Rotate ↺</button>
+        <button type="button" data-play-action="hard-drop">Drop ⬇</button>
+      </div>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>

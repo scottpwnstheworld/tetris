@@ -1,5 +1,6 @@
 import {
   createPlaySession,
+  handlePlayAction,
   handlePlayKey,
   stepPlayGravity,
   type PlaySession,
@@ -81,3 +82,37 @@ window.addEventListener("keydown", (event) => {
   session = handlePlayKey(session, event.key);
   draw();
 });
+
+function applyPlayAction(action: string): void {
+  const result = handlePlayAction(session, action);
+  if (result === session) {
+    return;
+  }
+  if ("linesCleared" in result) {
+    lastLinesCleared = result.linesCleared;
+    session = {
+      state: result.state,
+      gameOver: result.gameOver,
+    };
+  } else {
+    session = result;
+  }
+  draw();
+}
+
+for (const control of document.querySelectorAll("[data-play-action]")) {
+  if (!(control instanceof HTMLButtonElement)) {
+    continue;
+  }
+  const action = control.dataset.playAction;
+  if (!action) {
+    continue;
+  }
+  control.addEventListener("click", () => {
+    applyPlayAction(action);
+  });
+  control.addEventListener("pointerdown", (event) => {
+    event.preventDefault();
+    applyPlayAction(action);
+  });
+}
