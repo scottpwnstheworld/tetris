@@ -1,0 +1,14 @@
+{
+  "name": "Tetris",
+  "startCommand": "npm run dev",
+  "port": 8795,
+  "url": "http://themainframe:8795/",
+  "healthUrl": "http://127.0.0.1:8795/",
+  "logFile": "logs/dev.log",
+  "autostart": false,
+  "enabled": true,
+  "env": {
+    "PORT": "8795",
+    "DEV_PUBLIC_HOST": "themainframe"
+  }
+}
