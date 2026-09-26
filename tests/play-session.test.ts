@@ -29,11 +29,13 @@ describe("createPlaySession", () => {
     );
   });
 
-  it("queues the demo next piece kind for the preview panel", () => {
+  it("exposes active and next kinds from the seven-bag queue for the preview panel", () => {
     const session = createPlaySession();
+    const kinds = ["I", "O", "T", "S", "Z", "J", "L"] as const;
 
-    expect(session.state.piece!.kind).toBe("T");
-    expect(session.state.nextPiece).toBe("O");
+    expect(session.state.bag).toBeDefined();
+    expect(kinds).toContain(session.state.piece!.kind);
+    expect(kinds).toContain(session.state.nextPiece);
   });
 });
 

@@ -1,3 +1,4 @@
+import { createBagState, DEFAULT_BAG_SEED, takeFromBag } from "./bag.js";
 import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
 import { moveActivePiece, rotateActivePieceCounterClockwise } from "./input.js";
 import { addLineClearScore } from "./score.js";
@@ -25,8 +26,10 @@ export type PlayActionResult = PlaySession & {
 };
 
 export function createPlaySession(): PlaySession {
+  const first = takeFromBag(createBagState(DEFAULT_BAG_SEED));
+  const second = takeFromBag(first.bag);
   return {
-    state: createGameState("T", "O"),
+    state: createGameState(first.kind, second.kind, second.bag),
     gameOver: false,
     score: 0,
   };
