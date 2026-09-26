@@ -28,6 +28,15 @@ describe("createPlaySession", () => {
       true,
     );
   });
+
+  it("exposes active and next kinds from the seven-bag queue for the preview panel", () => {
+    const session = createPlaySession();
+    const kinds = ["I", "O", "T", "S", "Z", "J", "L"] as const;
+
+    expect(session.state.bag).toBeDefined();
+    expect(kinds).toContain(session.state.piece!.kind);
+    expect(kinds).toContain(session.state.nextPiece);
+  });
 });
 
 describe("handlePlayKey", () => {
@@ -39,13 +48,13 @@ describe("handlePlayKey", () => {
     expect(after.state.piece!.x).toBe(before.state.piece!.x - 1);
   });
 
-  it("rotates the active piece clockwise on ArrowUp", () => {
+  it("rotates the active piece one step counter-clockwise on ArrowUp", () => {
     const before = createPlaySession();
     const after = handlePlayKey(before, "ArrowUp");
 
     expect(after.gameOver).toBe(false);
-    expect(after.state.piece).not.toEqual(before.state.piece);
-    expect(after.state.piece!.kind).toBe(before.state.piece!.kind);
+    expect(after.state.piece!.kind).toBe("T");
+    expect(after.state.piece!.rotation).toBe(3);
   });
 
   it("ignores unknown keys without changing state", () => {

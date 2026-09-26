@@ -1,19 +1,37 @@
-import { createGameState, tickGravity, type GameState } from "./game.js";
-import { moveActivePiece, rotateActivePiece } from "./input.js";
+import { createBagState, DEFAULT_BAG_SEED, takeFromBag } from "./bag.js";
+import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
+import { moveActivePiece, rotateActivePieceCounterClockwise } from "./input.js";
+import { addLineClearScore } from "./score.js";
 
 export type PlaySession = {
   state: GameState;
   gameOver: boolean;
+  score: number;
 };
+
+function scoreAfterLineClear(session: PlaySession, linesCleared: number): number {
+  const current = session.score ?? 0;
+  if (linesCleared <= 0) {
+    return current;
+  }
+  return addLineClearScore(current, linesCleared);
+}
 
 export type StepPlayGravityResult = PlaySession & {
   linesCleared: number;
 };
 
+export type PlayActionResult = PlaySession & {
+  linesCleared: number;
+};
+
 export function createPlaySession(): PlaySession {
+  const first = takeFromBag(createBagState(DEFAULT_BAG_SEED));
+  const second = takeFromBag(first.bag);
   return {
-    state: createGameState("T", "O"),
+    state: createGameState(first.kind, second.kind, second.bag),
     gameOver: false,
+    score: 0,
   };
 }
 
@@ -34,7 +52,7 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
       nextState = moveActivePiece(session.state, 0, 1);
       break;
     case "ArrowUp":
-      nextState = rotateActivePiece(session.state, "cw");
+      nextState = rotateActivePieceCounterClockwise(session.state);
       break;
     default:
       return session;
@@ -43,7 +61,35 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
   return {
     state: nextState,
     gameOver: false,
+    score: session.score ?? 0,
   };
+}
+
+export function handlePlayAction(
+  session: PlaySession,
+  action: string,
+): PlaySession | PlayActionResult {
+  if (session.gameOver) {
+    return session;
+  }
+
+  switch (action) {
+    case "rotate-ccw": {
+      const next = handlePlayKey(session, "ArrowUp");
+      return { ...next, linesCleared: 0 };
+    }
+    case "hard-drop": {
+      const result = hardDrop(session.state);
+      return {
+        state: result.state,
+        gameOver: result.gameOver,
+        linesCleared: result.linesCleared,
+        score: scoreAfterLineClear(session, result.linesCleared),
+      };
+    }
+    default:
+      return session;
+  }
 }
 
 export function stepPlayGravity(session: PlaySession): StepPlayGravityResult {
@@ -52,5 +98,6 @@ export function stepPlayGravity(session: PlaySession): StepPlayGravityResult {
     state: result.state,
     gameOver: result.gameOver,
     linesCleared: result.linesCleared,
+    score: scoreAfterLineClear(session, result.linesCleared),
   };
 }

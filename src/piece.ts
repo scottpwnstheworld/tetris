@@ -1,3 +1,5 @@
+import { getLocalOffsets } from "./rotation-system.js";
+
 export type PieceKind = "I" | "O" | "T" | "S" | "Z" | "J" | "L";
 
 export type ActivePiece = {
@@ -5,193 +7,6 @@ export type ActivePiece = {
   x: number;
   y: number;
   rotation?: number;
-};
-
-type Offset = readonly [number, number];
-
-const SHAPES: Record<PieceKind, readonly (readonly Offset[])[]> = {
-  I: [
-    [
-      [0, 0],
-      [1, 0],
-      [2, 0],
-      [3, 0],
-    ],
-    [
-      [2, 0],
-      [2, 1],
-      [2, 2],
-      [2, 3],
-    ],
-    [
-      [0, 1],
-      [1, 1],
-      [2, 1],
-      [3, 1],
-    ],
-    [
-      [1, 0],
-      [1, 1],
-      [1, 2],
-      [1, 3],
-    ],
-  ],
-  O: [
-    [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-    ],
-  ],
-  T: [
-    [
-      [0, 0],
-      [1, 0],
-      [2, 0],
-      [1, 1],
-    ],
-    [
-      [1, 0],
-      [0, 1],
-      [1, 1],
-      [2, 1],
-    ],
-    [
-      [1, 0],
-      [1, 1],
-      [2, 1],
-      [1, 2],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [1, 1],
-      [2, 1],
-    ],
-  ],
-  S: [
-    [
-      [1, 0],
-      [2, 0],
-      [0, 1],
-      [1, 1],
-    ],
-    [
-      [1, 0],
-      [1, 1],
-      [2, 1],
-      [2, 2],
-    ],
-    [
-      [2, 0],
-      [2, 1],
-      [1, 1],
-      [1, 2],
-    ],
-    [
-      [0, 0],
-      [0, 1],
-      [1, 1],
-      [2, 1],
-    ],
-  ],
-  Z: [
-    [
-      [0, 0],
-      [1, 0],
-      [1, 1],
-      [2, 1],
-    ],
-    [
-      [1, 0],
-      [0, 1],
-      [1, 1],
-      [0, 2],
-    ],
-    [
-      [2, 0],
-      [2, 1],
-      [1, 1],
-      [1, 2],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-    ],
-  ],
-  J: [
-    [
-      [0, 0],
-      [0, 1],
-      [0, 2],
-      [1, 2],
-    ],
-    [
-      [1, 0],
-      [2, 0],
-      [1, 1],
-      [1, 2],
-    ],
-    [
-      [1, 0],
-      [1, 1],
-      [1, 2],
-      [0, 2],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [0, 2],
-    ],
-  ],
-  L: [
-    [
-      [2, 0],
-      [2, 1],
-      [2, 2],
-      [1, 2],
-    ],
-    [
-      [1, 0],
-      [1, 1],
-      [1, 2],
-      [2, 2],
-    ],
-    [
-      [0, 0],
-      [1, 0],
-      [1, 1],
-      [1, 2],
-    ],
-    [
-      [1, 0],
-      [0, 1],
-      [0, 2],
-      [1, 2],
-    ],
-  ],
 };
 
 const SPAWN: Record<PieceKind, readonly [number, number]> = {
@@ -211,7 +26,7 @@ export function spawnPiece(kind: PieceKind): ActivePiece {
 
 export function getPieceCells(piece: ActivePiece): ReadonlyArray<{ x: number; y: number }> {
   const rotation = piece.rotation ?? 0;
-  const offsets = SHAPES[piece.kind][rotation];
+  const offsets = getLocalOffsets(piece.kind, rotation);
   return offsets.map(([dx, dy]) => ({
     x: piece.x + dx,
     y: piece.y + dy,

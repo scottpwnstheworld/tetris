@@ -1,3 +1,30 @@
 # Tetris
 
-Empty sandbox for while_you_were_gone agent cycles. Goals and progress live in `while_you_were_gone/data/repos/tetris/`, not in this repo.
+Browser Tetris built in TypeScript with a canvas playfield. Play locally or via Remote Work on the dev machine.
+
+## Setup
+
+```bash
+npm install
+```
+
+## Run the game
+
+Start the Vite dev server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:8795/](http://localhost:8795/) in a browser, or use the Remote Work / supervisor preview at [http://themainframe:8795/](http://themainframe:8795/) when the dev PC is reachable on Tailscale or LAN.
+
+## Tests
+
+```bash
+npm test
+```
+
+## Controls
+
+- **Keyboard:** Arrow keys — left/right/down move the piece; up rotates counter-clockwise.
+- **Touch / on-screen:** Use the rotate and hard drop buttons below the playfield.

@@ -45,11 +45,12 @@ describe("tryRotate", () => {
     const rotated = tryRotate(piece, grid, "ccw");
 
     expect(rotated).not.toBeNull();
+    expect(rotated!.rotation).toBe(3);
     expectCells(rotated!, [
-      [3, 0],
       [4, 0],
+      [3, 1],
       [4, 1],
-      [5, 1],
+      [4, 2],
     ]);
   });
 
