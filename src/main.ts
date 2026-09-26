@@ -13,6 +13,11 @@ import {
   resizePlayfieldCanvas,
 } from "./render.js";
 import { bindPlayActionControls } from "./play-controls.js";
+import {
+  formatGameOverStatus,
+  formatIdlePlayStatus,
+  formatLineClearStatus,
+} from "./play-hints.js";
 
 const canvas = document.getElementById("playfield");
 const nextPreviewCanvas = document.getElementById("next-preview");
@@ -47,14 +52,14 @@ let lastLinesCleared = 0;
 
 function updateStatus(): void {
   if (session.gameOver) {
-    status.textContent = "Game over — refresh to play again.";
+    status.textContent = formatGameOverStatus();
     return;
   }
   if (lastLinesCleared > 0) {
-    status.textContent = `Cleared ${lastLinesCleared} line(s). Arrow keys: move / rotate counter-clockwise.`;
+    status.textContent = formatLineClearStatus(lastLinesCleared);
     return;
   }
-  status.textContent = "Arrow keys: left/right/down move, up rotates counter-clockwise.";
+  status.textContent = formatIdlePlayStatus();
 }
 
 function draw(): void {

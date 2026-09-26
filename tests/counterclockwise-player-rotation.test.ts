@@ -116,7 +116,10 @@ describe("counter-clockwise rotation wiring", () => {
   });
 
   it("documents counter-clockwise rotation in the dev preview status copy", () => {
-    const mainSource = readFileSync(new URL("../src/main.ts", import.meta.url), "utf8");
-    expect(mainSource.toLowerCase()).toMatch(/counter[- ]?clockwise/);
+    const hintsSource = readFileSync(
+      new URL("../src/play-hints.ts", import.meta.url),
+      "utf8",
+    );
+    expect(hintsSource.toLowerCase()).toMatch(/counter[- ]?clockwise/);
   });
 });
