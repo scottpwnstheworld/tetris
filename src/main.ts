@@ -12,6 +12,7 @@ import {
   resizeNextPreviewCanvas,
   resizePlayfieldCanvas,
 } from "./render.js";
+import { bindPlayActionControls } from "./play-controls.js";
 
 const canvas = document.getElementById("playfield");
 const nextPreviewCanvas = document.getElementById("next-preview");
@@ -108,19 +109,4 @@ function applyPlayAction(action: string): void {
   draw();
 }
 
-for (const control of document.querySelectorAll("[data-play-action]")) {
-  if (!(control instanceof HTMLButtonElement)) {
-    continue;
-  }
-  const action = control.dataset.playAction;
-  if (!action) {
-    continue;
-  }
-  control.addEventListener("click", () => {
-    applyPlayAction(action);
-  });
-  control.addEventListener("pointerdown", (event) => {
-    event.preventDefault();
-    applyPlayAction(action);
-  });
-}
+bindPlayActionControls(document, applyPlayAction);

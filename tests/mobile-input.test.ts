@@ -158,8 +158,13 @@ describe("mobile touch controls wiring", () => {
   it("routes mobile control events through handlePlayAction in main.ts", () => {
     const mainSource = readFileSync(new URL("../src/main.ts", import.meta.url), "utf8");
     expect(mainSource).toMatch(/handlePlayAction\s*\(/);
-    expect(mainSource).toMatch(/data-play-action/);
-    expect(mainSource).toMatch(/touchstart|pointerdown|click/);
+    expect(mainSource).toMatch(/bindPlayActionControls\s*\(/);
+    const controlsSource = readFileSync(
+      new URL("../src/play-controls.ts", import.meta.url),
+      "utf8",
+    );
+    expect(controlsSource).toMatch(/data-play-action/);
+    expect(controlsSource).toMatch(/export\s+function\s+bindPlayActionControls/);
   });
 
   it("implements handlePlayAction in session.ts for mobile play actions", () => {
