@@ -46,13 +46,13 @@ describe("handlePlayKey", () => {
     expect(after.state.piece!.x).toBe(before.state.piece!.x - 1);
   });
 
-  it("rotates the active piece one step clockwise on ArrowUp", () => {
+  it("rotates the active piece one step counter-clockwise on ArrowUp", () => {
     const before = createPlaySession();
     const after = handlePlayKey(before, "ArrowUp");
 
     expect(after.gameOver).toBe(false);
     expect(after.state.piece!.kind).toBe("T");
-    expect(after.state.piece!.rotation).toBe(1);
+    expect(after.state.piece!.rotation).toBe(3);
   });
 
   it("ignores unknown keys without changing state", () => {

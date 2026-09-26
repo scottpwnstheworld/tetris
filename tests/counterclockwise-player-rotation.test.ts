@@ -8,7 +8,7 @@ import {
   type PieceKind,
 } from "../src/piece.js";
 import { createGameState } from "../src/game.js";
-import { rotateActivePieceClockwise } from "../src/input.js";
+import { rotateActivePieceCounterClockwise } from "../src/input.js";
 import { tryRotate } from "../src/rotation.js";
 import { createPlaySession, handlePlayKey } from "../src/session.js";
 
@@ -20,34 +20,34 @@ function expectCells(piece: ActivePiece, expected: ReadonlyArray<readonly [numbe
   }
 }
 
-describe("rotateActivePieceClockwise", () => {
+describe("rotateActivePieceCounterClockwise", () => {
   const grid = createEmptyPlayfield();
 
-  it("advances the rotation index by one modulo four", () => {
+  it("retreats the rotation index by one modulo four", () => {
     const before = createGameState("T", "O");
-    const after = rotateActivePieceClockwise(before);
+    const after = rotateActivePieceCounterClockwise(before);
 
-    expect(after.piece!.rotation).toBe(1);
+    expect(after.piece!.rotation).toBe(3);
   });
 
-  it("matches a single tryRotate clockwise step, not counter-clockwise", () => {
+  it("matches a single tryRotate counter-clockwise step, not clockwise", () => {
     const before = createGameState("T", "O");
     const piece = before.piece!;
 
-    const after = rotateActivePieceClockwise(before);
-    const cw = tryRotate(piece, grid, "cw");
+    const after = rotateActivePieceCounterClockwise(before);
     const ccw = tryRotate(piece, grid, "ccw");
+    const cw = tryRotate(piece, grid, "cw");
 
-    expect(cw).not.toBeNull();
     expect(ccw).not.toBeNull();
-    expect(after.piece).toEqual(cw);
-    expect(after.piece!.rotation).not.toBe(ccw!.rotation);
+    expect(cw).not.toBeNull();
+    expect(after.piece).toEqual(ccw);
+    expect(after.piece!.rotation).not.toBe(cw!.rotation);
   });
 
   it("returns to the spawn pose after four player rotation actions", () => {
     let state = createGameState("T", "O");
     for (let i = 0; i < 4; i += 1) {
-      state = rotateActivePieceClockwise(state);
+      state = rotateActivePieceCounterClockwise(state);
     }
 
     expect(state.piece).toEqual(spawnPiece("T"));
@@ -59,41 +59,41 @@ describe("rotateActivePieceClockwise", () => {
     ]);
   });
 
-  it("performs one 90-degree clockwise step for every standard kind at spawn", () => {
+  it("performs one 90-degree counter-clockwise step for every standard kind at spawn", () => {
     const kinds: PieceKind[] = ["I", "O", "T", "S", "Z", "J", "L"];
     for (const kind of kinds) {
       const before = createGameState(kind, "I");
-      const after = rotateActivePieceClockwise(before);
-      const expected = tryRotate(before.piece!, grid, "cw");
+      const after = rotateActivePieceCounterClockwise(before);
+      const expected = tryRotate(before.piece!, grid, "ccw");
 
       expect(expected).not.toBeNull();
       expect(after.piece).toEqual(expected);
-      expect((after.piece!.rotation ?? 0)).toBe(((before.piece!.rotation ?? 0) + 1) % 4);
+      expect((after.piece!.rotation ?? 0)).toBe(((before.piece!.rotation ?? 0) + 3) % 4);
     }
   });
 
   it("returns the same state when there is no active piece", () => {
     const before = createGameState("T", "O");
     const ended = { ...before, piece: null };
-    const after = rotateActivePieceClockwise(ended);
+    const after = rotateActivePieceCounterClockwise(ended);
 
     expect(after).toBe(ended);
   });
 });
 
-describe("play session clockwise rotation", () => {
-  it("maps ArrowUp to one clockwise step with rotation index 1 for spawn T", () => {
+describe("play session counter-clockwise rotation", () => {
+  it("maps ArrowUp to one counter-clockwise step with rotation index 3 for spawn T", () => {
     const before = createPlaySession();
     expect(before.state.piece!.rotation ?? 0).toBe(0);
 
     const after = handlePlayKey(before, "ArrowUp");
 
-    expect(after.state.piece!.rotation).toBe(1);
+    expect(after.state.piece!.rotation).toBe(3);
     expectCells(after.state.piece!, [
       [4, 0],
       [3, 1],
       [4, 1],
-      [5, 1],
+      [4, 2],
     ]);
   });
 
@@ -107,15 +107,16 @@ describe("play session clockwise rotation", () => {
   });
 });
 
-describe("clockwise rotation wiring", () => {
-  it("routes session ArrowUp through rotateActivePieceClockwise", () => {
+describe("counter-clockwise rotation wiring", () => {
+  it("routes session ArrowUp through rotateActivePieceCounterClockwise", () => {
     const sessionSource = readFileSync(new URL("../src/session.ts", import.meta.url), "utf8");
-    expect(sessionSource).toMatch(/rotateActivePieceClockwise\s*\(/);
-    expect(sessionSource).not.toMatch(/rotateActivePiece\s*\([^)]*,\s*["']cw["']\s*\)/);
+    expect(sessionSource).toMatch(/rotateActivePieceCounterClockwise\s*\(/);
+    expect(sessionSource).not.toMatch(/rotateActivePieceClockwise\s*\(/);
+    expect(sessionSource).not.toMatch(/rotateActivePiece\s*\([^)]*,\s*["']ccw["']\s*\)/);
   });
 
-  it("documents clockwise rotation in the dev preview status copy", () => {
+  it("documents counter-clockwise rotation in the dev preview status copy", () => {
     const mainSource = readFileSync(new URL("../src/main.ts", import.meta.url), "utf8");
-    expect(mainSource.toLowerCase()).toMatch(/clockwise/);
+    expect(mainSource.toLowerCase()).toMatch(/counter[- ]?clockwise/);
   });
 });

@@ -24,8 +24,8 @@ export function moveActivePiece(state: GameState, dx: number, dy: number): GameS
   };
 }
 
-export function rotateActivePieceClockwise(state: GameState): GameState {
-  return rotateActivePiece(state, "cw");
+export function rotateActivePieceCounterClockwise(state: GameState): GameState {
+  return rotateActivePiece(state, "ccw");
 }
 
 export function rotateActivePiece(state: GameState, direction: RotateDirection): GameState {
