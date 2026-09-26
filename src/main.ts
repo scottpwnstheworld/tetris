@@ -30,10 +30,10 @@ function updateStatus(): void {
     return;
   }
   if (lastLinesCleared > 0) {
-    status.textContent = `Cleared ${lastLinesCleared} line(s). Arrow keys: move / rotate.`;
+    status.textContent = `Cleared ${lastLinesCleared} line(s). Arrow keys: move / rotate clockwise.`;
     return;
   }
-  status.textContent = "Arrow keys: left/right/down move, up rotates.";
+  status.textContent = "Arrow keys: left/right/down move, up rotates clockwise.";
 }
 
 function draw(): void {

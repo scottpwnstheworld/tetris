@@ -1,5 +1,5 @@
 import { createGameState, tickGravity, type GameState } from "./game.js";
-import { moveActivePiece, rotateActivePiece } from "./input.js";
+import { moveActivePiece, rotateActivePieceClockwise } from "./input.js";
 
 export type PlaySession = {
   state: GameState;
@@ -34,7 +34,7 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
       nextState = moveActivePiece(session.state, 0, 1);
       break;
     case "ArrowUp":
-      nextState = rotateActivePiece(session.state, "cw");
+      nextState = rotateActivePieceClockwise(session.state);
       break;
     default:
       return session;
