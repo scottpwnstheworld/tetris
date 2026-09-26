@@ -7,6 +7,7 @@ export type PlaySession = {
   state: GameState;
   gameOver: boolean;
   score: number;
+  totalLinesCleared: number;
 };
 
 function scoreAfterLineClear(session: PlaySession, linesCleared: number): number {
@@ -15,6 +16,10 @@ function scoreAfterLineClear(session: PlaySession, linesCleared: number): number
     return current;
   }
   return addLineClearScore(current, linesCleared);
+}
+
+function totalLinesAfterClear(session: PlaySession, linesCleared: number): number {
+  return session.totalLinesCleared + linesCleared;
 }
 
 export type StepPlayGravityResult = PlaySession & {
@@ -32,6 +37,7 @@ export function createPlaySession(): PlaySession {
     state: createGameState(first.kind, second.kind, second.bag),
     gameOver: false,
     score: 0,
+    totalLinesCleared: 0,
   };
 }
 
@@ -76,6 +82,7 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
     state: nextState,
     gameOver: false,
     score: session.score ?? 0,
+    totalLinesCleared: session.totalLinesCleared,
   };
 }
 
@@ -106,6 +113,7 @@ export function handlePlayAction(
         gameOver: result.gameOver,
         linesCleared: result.linesCleared,
         score: scoreAfterLineClear(session, result.linesCleared),
+        totalLinesCleared: totalLinesAfterClear(session, result.linesCleared),
       };
     }
     default:
@@ -120,5 +128,6 @@ export function stepPlayGravity(session: PlaySession): StepPlayGravityResult {
     gameOver: result.gameOver,
     linesCleared: result.linesCleared,
     score: scoreAfterLineClear(session, result.linesCleared),
+    totalLinesCleared: totalLinesAfterClear(session, result.linesCleared),
   };
 }

@@ -6,7 +6,9 @@ import {
   stepPlayGravity,
   type PlaySession,
 } from "./session.js";
+import { gravityIntervalMs, levelFromTotalLines } from "./gravity-speed.js";
 import {
+  formatLevelText,
   formatScoreText,
   renderGameState,
   renderNextPiecePreview,
@@ -24,6 +26,7 @@ const canvas = document.getElementById("playfield");
 const nextPreviewCanvas = document.getElementById("next-preview");
 const status = document.getElementById("status");
 const scoreEl = document.getElementById("score");
+const levelEl = document.getElementById("level");
 if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error("Missing #playfield canvas");
 }
@@ -35,6 +38,9 @@ if (!(status instanceof HTMLParagraphElement)) {
 }
 if (!(scoreEl instanceof HTMLParagraphElement)) {
   throw new Error("Missing #score");
+}
+if (!(levelEl instanceof HTMLParagraphElement)) {
+  throw new Error("Missing #level");
 }
 
 resizePlayfieldCanvas(canvas);
@@ -67,25 +73,40 @@ function draw(): void {
   renderGameState(ctx, session.state);
   renderNextPiecePreview(nextPreviewCtx, session.state.nextPiece);
   scoreEl.textContent = formatScoreText(session.score);
+  levelEl.textContent = formatLevelText(
+    levelFromTotalLines(session.totalLinesCleared),
+  );
   updateStatus();
 }
 
-draw();
+let gravityTimer: ReturnType<typeof window.setInterval> | undefined;
 
-const GRAVITY_MS = 800;
-window.setInterval(() => {
-  if (session.gameOver) {
-    return;
+function syncGravityInterval(): void {
+  if (gravityTimer !== undefined) {
+    window.clearInterval(gravityTimer);
   }
-  const result = stepPlayGravity(session);
-  lastLinesCleared = result.linesCleared;
-  session = {
-    state: result.state,
-    gameOver: result.gameOver,
-    score: result.score,
-  };
-  draw();
-}, GRAVITY_MS);
+  const ms = gravityIntervalMs(session.totalLinesCleared);
+  gravityTimer = window.setInterval(() => {
+    if (session.gameOver) {
+      return;
+    }
+    const result = stepPlayGravity(session);
+    lastLinesCleared = result.linesCleared;
+    session = {
+      state: result.state,
+      gameOver: result.gameOver,
+      score: result.score,
+      totalLinesCleared: result.totalLinesCleared,
+    };
+    if (result.linesCleared > 0) {
+      syncGravityInterval();
+    }
+    draw();
+  }, ms);
+}
+
+draw();
+syncGravityInterval();
 
 window.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
@@ -93,6 +114,7 @@ window.addEventListener("keydown", (event) => {
     if (next !== session) {
       lastLinesCleared = 0;
       session = next;
+      syncGravityInterval();
       draw();
     }
     return;
@@ -112,6 +134,7 @@ function applyPlayAction(action: string): void {
     if (next !== session) {
       lastLinesCleared = 0;
       session = next;
+      syncGravityInterval();
       draw();
     }
     return;
@@ -126,7 +149,11 @@ function applyPlayAction(action: string): void {
       state: result.state,
       gameOver: result.gameOver,
       score: result.score,
+      totalLinesCleared: result.totalLinesCleared,
     };
+    if (result.linesCleared > 0) {
+      syncGravityInterval();
+    }
   } else {
     session = result;
   }

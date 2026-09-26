@@ -121,3 +121,7 @@ export function renderGameState(ctx: CanvasRenderingContext2D, state: GameState)
 export function formatScoreText(score: number): string {
   return `Score: ${score}`;
 }
+
+export function formatLevelText(level: number): string {
+  return `Level: ${level}`;
+}
