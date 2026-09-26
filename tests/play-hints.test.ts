@@ -32,10 +32,11 @@ describe("formatLineClearStatus", () => {
 });
 
 describe("formatGameOverStatus", () => {
-  it("tells the player to refresh to play again", () => {
+  it("tells the player how to restart without reloading the page", () => {
     const text = formatGameOverStatus().toLowerCase();
     expect(text).toMatch(/game over/);
-    expect(text).toMatch(/refresh/);
+    expect(text).toMatch(/enter|restart/);
+    expect(text).not.toMatch(/refresh the page|refresh to play again/);
   });
 });
 

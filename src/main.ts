@@ -2,6 +2,7 @@ import {
   createPlaySession,
   handlePlayAction,
   handlePlayKey,
+  restartPlaySession,
   stepPlayGravity,
   type PlaySession,
 } from "./session.js";
@@ -87,6 +88,15 @@ window.setInterval(() => {
 }, GRAVITY_MS);
 
 window.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    const next = restartPlaySession(session);
+    if (next !== session) {
+      lastLinesCleared = 0;
+      session = next;
+      draw();
+    }
+    return;
+  }
   if (!event.key.startsWith("Arrow")) {
     return;
   }
@@ -97,6 +107,15 @@ window.addEventListener("keydown", (event) => {
 });
 
 function applyPlayAction(action: string): void {
+  if (action === "restart") {
+    const next = restartPlaySession(session);
+    if (next !== session) {
+      lastLinesCleared = 0;
+      session = next;
+      draw();
+    }
+    return;
+  }
   const result = handlePlayAction(session, action);
   if (result === session) {
     return;

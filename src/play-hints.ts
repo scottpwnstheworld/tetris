@@ -10,5 +10,5 @@ export function formatLineClearStatus(linesCleared: number): string {
 }
 
 export function formatGameOverStatus(): string {
-  return "Game over — refresh to play again.";
+  return "Game over — press Enter or tap Restart to play again.";
 }

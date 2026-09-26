@@ -27,4 +27,4 @@ npm test
 ## Controls
 
 - **Keyboard:** Arrow keys — left/right/down move the piece; up rotates counter-clockwise.
-- **Touch / on-screen:** Use the rotate and hard drop buttons below the playfield.
+- **Touch / on-screen:** Use the rotate and hard drop buttons below the playfield. After game over, tap **Restart** or press **Enter** to start a new game.

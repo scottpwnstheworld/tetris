@@ -26,6 +26,7 @@ describe("README run documentation", () => {
     expect(lower).toMatch(/arrow/);
     expect(lower).toMatch(/rotate/);
     expect(lower).toMatch(/drop/);
+    expect(lower).toMatch(/restart|enter/);
   });
 
   it("does not point readers only at external WYWG data for how to run the game", () => {
