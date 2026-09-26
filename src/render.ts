@@ -1,5 +1,6 @@
 import { PLAYFIELD_COLS, PLAYFIELD_ROWS } from "./playfield.js";
 import type { GameState } from "./game.js";
+import { computeGhostPiece } from "./ghost.js";
 import { getPieceCells, spawnPiece, type PieceKind } from "./piece.js";
 
 export const CELL_SIZE_PX = 24;
@@ -9,8 +10,9 @@ export const NEXT_PREVIEW_ROWS = 4;
 export const NEXT_PREVIEW_FILL = "#5a9e7a";
 
 const BACKGROUND_FILL = "#12151c";
-const LOCKED_FILL = "#3d6b9e";
-const ACTIVE_FILL = "#e6c84b";
+export const LOCKED_FILL = "#3d6b9e";
+export const ACTIVE_FILL = "#e6c84b";
+export const GHOST_FILL = "#6b5a3a";
 
 export function playfieldPixelSize(): { width: number; height: number } {
   return {
@@ -101,6 +103,14 @@ export function renderGameState(ctx: CanvasRenderingContext2D, state: GameState)
 
   const piece = state.piece;
   if (piece !== null) {
+    const ghost = computeGhostPiece(state);
+    if (ghost !== null) {
+      ctx.fillStyle = GHOST_FILL;
+      for (const { x, y } of getPieceCells(ghost)) {
+        ctx.fillRect(x * CELL_SIZE_PX, y * CELL_SIZE_PX, CELL_SIZE_PX, CELL_SIZE_PX);
+      }
+    }
+
     ctx.fillStyle = ACTIVE_FILL;
     for (const { x, y } of getPieceCells(piece)) {
       ctx.fillRect(x * CELL_SIZE_PX, y * CELL_SIZE_PX, CELL_SIZE_PX, CELL_SIZE_PX);
