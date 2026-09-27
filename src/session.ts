@@ -122,7 +122,9 @@ export function handlePlayAction(
     (action === "hard-drop" ||
       action === "move-left" ||
       action === "move-right" ||
-      action === "move-down")
+      action === "move-down" ||
+      action === "rotate-ccw" ||
+      action === "hold")
   ) {
     return session;
   }
