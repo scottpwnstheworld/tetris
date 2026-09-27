@@ -14,6 +14,12 @@ describe("formatIdlePlayStatus", () => {
     expect(text.toLowerCase()).toMatch(/counter[- ]?clockwise/);
   });
 
+  it("mentions clockwise rotation on X", () => {
+    const text = formatIdlePlayStatus().toLowerCase();
+    expect(text).toMatch(/clockwise/);
+    expect(text).toMatch(/\bx\b/);
+  });
+
   it("mentions on-screen touch controls for rotate and hard drop", () => {
     const text = formatIdlePlayStatus().toLowerCase();
     expect(text).toMatch(/rotate/);

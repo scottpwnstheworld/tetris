@@ -32,6 +32,16 @@ describe("handlePlayKey while paused", () => {
     expect(after).toBe(paused);
     expect(after.state.piece!.rotation).toBe(rotationBefore);
   });
+
+  it("ignores KeyX without rotating clockwise", () => {
+    const paused = pausedSession();
+    const rotationBefore = paused.state.piece!.rotation;
+
+    const after = handlePlayKey(paused, "KeyX");
+
+    expect(after).toBe(paused);
+    expect(after.state.piece!.rotation).toBe(rotationBefore);
+  });
 });
 
 describe("handlePlayAction gameplay while paused", () => {
@@ -56,6 +66,16 @@ describe("handlePlayAction gameplay while paused", () => {
     expect(after.state.piece!.rotation).toBe(rotationBefore);
   });
 
+  it("does not rotate clockwise through rotate-cw", () => {
+    const paused = pausedSession();
+    const rotationBefore = paused.state.piece!.rotation;
+
+    const after = handlePlayAction(paused, "rotate-cw");
+
+    expect(after).toBe(paused);
+    expect(after.state.piece!.rotation).toBe(rotationBefore);
+  });
+
   it("returns the same session reference for every blocked gameplay action", () => {
     const paused = pausedSession();
     const blocked = [
@@ -63,6 +83,7 @@ describe("handlePlayAction gameplay while paused", () => {
       "move-right",
       "move-down",
       "rotate-ccw",
+      "rotate-cw",
       "hard-drop",
       "hold",
     ] as const;

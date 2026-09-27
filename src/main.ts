@@ -148,6 +148,12 @@ window.addEventListener("keydown", (event) => {
     draw();
     return;
   }
+  if (event.code === "KeyX") {
+    lastLinesCleared = 0;
+    session = handlePlayKey(session, "KeyX");
+    draw();
+    return;
+  }
   if (!event.key.startsWith("Arrow")) {
     return;
   }

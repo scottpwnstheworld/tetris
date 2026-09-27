@@ -26,5 +26,5 @@ npm test
 
 ## Controls
 
-- **Keyboard:** Arrow keys — left/right/down move the piece; up rotates counter-clockwise. **C** swaps with the hold slot (once per lock). **Escape** pauses and resumes the game.
-- **Touch / on-screen:** Use the **Left**, **Right**, and **Down** buttons to move the piece, plus hold, rotate, hard drop, and **Pause** below the playfield (`move-left`, `move-right`, `move-down`). After game over, tap **Restart** or press **Enter** to start a new game.
+- **Keyboard:** Arrow keys — left/right/down move the piece; up rotates counter-clockwise; **X** rotates clockwise. **C** swaps with the hold slot (once per lock). **Escape** pauses and resumes the game.
+- **Touch / on-screen:** Use the **Left**, **Right**, and **Down** buttons to move the piece, plus hold, rotate counter-clockwise (↺) and clockwise (↻), hard drop, and **Pause** below the playfield (`move-left`, `move-right`, `move-down`, `rotate-ccw`, `rotate-cw`). After game over, tap **Restart** or press **Enter** to start a new game.

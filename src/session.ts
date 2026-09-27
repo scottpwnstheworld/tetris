@@ -1,7 +1,11 @@
 import { createBagState, DEFAULT_BAG_SEED, takeFromBag } from "./bag.js";
 import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
 import { swapHold } from "./hold.js";
-import { moveActivePiece, rotateActivePieceCounterClockwise } from "./input.js";
+import {
+  moveActivePiece,
+  rotateActivePieceClockwise,
+  rotateActivePieceCounterClockwise,
+} from "./input.js";
 import { addHardDropScore, addLineClearScore, addSoftDropScore } from "./score.js";
 
 export type PlaySession = {
@@ -102,6 +106,9 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
     case "ArrowUp":
       nextState = rotateActivePieceCounterClockwise(session.state);
       break;
+    case "KeyX":
+      nextState = rotateActivePieceClockwise(session.state);
+      break;
     case "KeyC":
       nextState = swapHold(session.state);
       break;
@@ -133,6 +140,7 @@ export function handlePlayAction(
       action === "move-right" ||
       action === "move-down" ||
       action === "rotate-ccw" ||
+      action === "rotate-cw" ||
       action === "hold")
   ) {
     return session;
@@ -164,6 +172,10 @@ export function handlePlayAction(
     }
     case "rotate-ccw": {
       const next = handlePlayKey(session, "ArrowUp");
+      return { ...next, linesCleared: 0 };
+    }
+    case "rotate-cw": {
+      const next = handlePlayKey(session, "KeyX");
       return { ...next, linesCleared: 0 };
     }
     case "hard-drop": {

@@ -108,6 +108,14 @@ describe("handlePlayAction", () => {
     expect(fromMobile).toEqual({ ...fromKey, linesCleared: 0 });
   });
 
+  it("rotates clockwise on rotate-cw like KeyX", () => {
+    const before = createPlaySession();
+    const fromKey = handlePlayKey(before, "KeyX");
+    const fromMobile = handlePlayAction(before, "rotate-cw");
+
+    expect(fromMobile).toEqual({ ...fromKey, linesCleared: 0 });
+  });
+
   it("hard-drops the active piece on hard-drop", () => {
     const before = createPlaySession();
     const after = handlePlayAction(before, "hard-drop");
@@ -152,6 +160,7 @@ describe("mobile touch controls wiring", () => {
   it("exposes rotate and drop touch buttons in index.html", () => {
     const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
     expect(html).toMatch(/data-play-action=["']rotate-ccw["']/i);
+    expect(html).toMatch(/data-play-action=["']rotate-cw["']/i);
     expect(html).toMatch(/data-play-action=["']hard-drop["']/i);
     expect(html).toMatch(/type=["']button["']/i);
   });
@@ -173,5 +182,6 @@ describe("mobile touch controls wiring", () => {
     expect(sessionSource).toMatch(/export\s+function\s+handlePlayAction/);
     expect(sessionSource).toMatch(/hard-drop/);
     expect(sessionSource).toMatch(/rotate-ccw/);
+    expect(sessionSource).toMatch(/rotate-cw/);
   });
 });

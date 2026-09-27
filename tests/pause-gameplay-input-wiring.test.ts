@@ -23,6 +23,7 @@ describe("pause gameplay input wiring", () => {
     const guardBody = pausedGuard![0];
     expect(guardBody).toMatch(/hold/);
     expect(guardBody).toMatch(/rotate-ccw/);
+    expect(guardBody).toMatch(/rotate-cw/);
     expect(guardBody).toMatch(/hard-drop/);
     expect(guardBody).toMatch(/move-left/);
   });

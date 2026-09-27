@@ -32,6 +32,10 @@ export function rotateActivePieceCounterClockwise(state: GameState): GameState {
   return rotateActivePiece(state, "ccw");
 }
 
+export function rotateActivePieceClockwise(state: GameState): GameState {
+  return rotateActivePiece(state, "cw");
+}
+
 export function rotateActivePiece(state: GameState, direction: RotateDirection): GameState {
   const piece = state.piece;
   if (piece === null) {

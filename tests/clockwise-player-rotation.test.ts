@@ -8,7 +8,7 @@ import {
   type PieceKind,
 } from "../src/piece.js";
 import { createGameState } from "../src/game.js";
-import { rotateActivePieceCounterClockwise } from "../src/input.js";
+import { rotateActivePieceClockwise } from "../src/input.js";
 import { tryRotate } from "../src/rotation.js";
 import { createPlaySession, handlePlayKey } from "../src/session.js";
 
@@ -20,34 +20,34 @@ function expectCells(piece: ActivePiece, expected: ReadonlyArray<readonly [numbe
   }
 }
 
-describe("rotateActivePieceCounterClockwise", () => {
+describe("rotateActivePieceClockwise", () => {
   const grid = createEmptyPlayfield();
 
-  it("retreats the rotation index by one modulo four", () => {
+  it("advances the rotation index by one modulo four", () => {
     const before = createGameState("T", "O");
-    const after = rotateActivePieceCounterClockwise(before);
+    const after = rotateActivePieceClockwise(before);
 
-    expect(after.piece!.rotation).toBe(3);
+    expect(after.piece!.rotation).toBe(1);
   });
 
-  it("matches a single tryRotate counter-clockwise step, not clockwise", () => {
+  it("matches a single tryRotate clockwise step, not counter-clockwise", () => {
     const before = createGameState("T", "O");
     const piece = before.piece!;
 
-    const after = rotateActivePieceCounterClockwise(before);
-    const ccw = tryRotate(piece, grid, "ccw");
+    const after = rotateActivePieceClockwise(before);
     const cw = tryRotate(piece, grid, "cw");
+    const ccw = tryRotate(piece, grid, "ccw");
 
-    expect(ccw).not.toBeNull();
     expect(cw).not.toBeNull();
-    expect(after.piece).toEqual(ccw);
-    expect(after.piece!.rotation).not.toBe(cw!.rotation);
+    expect(ccw).not.toBeNull();
+    expect(after.piece).toEqual(cw);
+    expect(after.piece!.rotation).not.toBe(ccw!.rotation);
   });
 
   it("returns to the spawn pose after four player rotation actions", () => {
     let state = createGameState("T", "O");
     for (let i = 0; i < 4; i += 1) {
-      state = rotateActivePieceCounterClockwise(state);
+      state = rotateActivePieceClockwise(state);
     }
 
     expect(state.piece).toEqual(spawnPiece("T"));
@@ -59,72 +59,74 @@ describe("rotateActivePieceCounterClockwise", () => {
     ]);
   });
 
-  it("performs one 90-degree counter-clockwise step for every standard kind at spawn", () => {
+  it("performs one 90-degree clockwise step for every standard kind at spawn", () => {
     const kinds: PieceKind[] = ["I", "O", "T", "S", "Z", "J", "L"];
     for (const kind of kinds) {
       const before = createGameState(kind, "I");
-      const after = rotateActivePieceCounterClockwise(before);
-      const expected = tryRotate(before.piece!, grid, "ccw");
+      const after = rotateActivePieceClockwise(before);
+      const expected = tryRotate(before.piece!, grid, "cw");
 
       expect(expected).not.toBeNull();
       expect(after.piece).toEqual(expected);
-      expect((after.piece!.rotation ?? 0)).toBe(((before.piece!.rotation ?? 0) + 3) % 4);
+      expect(after.piece!.rotation ?? 0).toBe(((before.piece!.rotation ?? 0) + 1) % 4);
     }
   });
 
   it("returns the same state when there is no active piece", () => {
     const before = createGameState("T", "O");
     const ended = { ...before, piece: null };
-    const after = rotateActivePieceCounterClockwise(ended);
+    const after = rotateActivePieceClockwise(ended);
 
     expect(after).toBe(ended);
   });
 });
 
-describe("play session counter-clockwise rotation", () => {
-  it("maps ArrowUp to one counter-clockwise step with rotation index 3 for spawn T", () => {
+describe("play session clockwise rotation", () => {
+  it("maps KeyX to one clockwise step with rotation index 1 for spawn T", () => {
     const before = createPlaySession();
     expect(before.state.piece!.rotation ?? 0).toBe(0);
 
-    const after = handlePlayKey(before, "ArrowUp");
+    const after = handlePlayKey(before, "KeyX");
 
-    expect(after.state.piece!.rotation).toBe(3);
+    expect(after.state.piece!.rotation).toBe(1);
     expectCells(after.state.piece!, [
       [4, 0],
       [3, 1],
       [4, 1],
-      [4, 2],
+      [5, 1],
     ]);
   });
 
-  it("returns to spawn T after four ArrowUp presses", () => {
+  it("returns to spawn T after four KeyX presses", () => {
     let session = createPlaySession();
     for (let i = 0; i < 4; i += 1) {
-      session = handlePlayKey(session, "ArrowUp");
+      session = handlePlayKey(session, "KeyX");
     }
 
     expect(session.state.piece).toEqual(spawnPiece("T"));
   });
 });
 
-describe("counter-clockwise rotation wiring", () => {
-  it("routes session ArrowUp through rotateActivePieceCounterClockwise", () => {
+describe("clockwise rotation wiring", () => {
+  it("routes session KeyX through rotateActivePieceClockwise", () => {
     const sessionSource = readFileSync(new URL("../src/session.ts", import.meta.url), "utf8");
-    expect(sessionSource).toMatch(/rotateActivePieceCounterClockwise\s*\(/);
-    expect(sessionSource).not.toMatch(/rotateActivePiece\s*\([^)]*,\s*["']ccw["']\s*\)/);
-    const arrowUpCase = sessionSource.match(
-      /case\s+["']ArrowUp["'][\s\S]*?break;/,
-    );
-    expect(arrowUpCase).not.toBeNull();
-    expect(arrowUpCase![0]).toMatch(/rotateActivePieceCounterClockwise/);
-    expect(arrowUpCase![0]).not.toMatch(/rotateActivePieceClockwise/);
+    expect(sessionSource).toMatch(/rotateActivePieceClockwise\s*\(/);
+    expect(sessionSource).toMatch(/case\s+["']KeyX["']/);
+    expect(sessionSource).not.toMatch(/rotateActivePiece\s*\([^)]*,\s*["']cw["']\s*\)/);
   });
 
-  it("documents counter-clockwise rotation in the dev preview status copy", () => {
+  it("documents clockwise rotation in the dev preview status copy", () => {
     const hintsSource = readFileSync(
       new URL("../src/play-hints.ts", import.meta.url),
       "utf8",
     );
-    expect(hintsSource.toLowerCase()).toMatch(/counter[- ]?clockwise/);
+    expect(hintsSource.toLowerCase()).toMatch(/clockwise/);
+    expect(hintsSource).toMatch(/\bX\b|KeyX/i);
+  });
+
+  it("binds KeyX in main.ts for clockwise rotation", () => {
+    const mainSource = readFileSync(new URL("../src/main.ts", import.meta.url), "utf8");
+    expect(mainSource).toMatch(/KeyX/);
+    expect(mainSource).toMatch(/handlePlayKey/);
   });
 });
