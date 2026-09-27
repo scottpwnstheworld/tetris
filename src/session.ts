@@ -117,7 +117,13 @@ export function handlePlayAction(
     return session;
   }
 
-  if (session.paused && action === "hard-drop") {
+  if (
+    session.paused &&
+    (action === "hard-drop" ||
+      action === "move-left" ||
+      action === "move-right" ||
+      action === "move-down")
+  ) {
     return session;
   }
 
@@ -132,6 +138,18 @@ export function handlePlayAction(
       }
       const restarted = restartPlaySession(session);
       return { ...restarted, linesCleared: 0 };
+    }
+    case "move-left": {
+      const next = handlePlayKey(session, "ArrowLeft");
+      return { ...next, linesCleared: 0 };
+    }
+    case "move-right": {
+      const next = handlePlayKey(session, "ArrowRight");
+      return { ...next, linesCleared: 0 };
+    }
+    case "move-down": {
+      const next = handlePlayKey(session, "ArrowDown");
+      return { ...next, linesCleared: 0 };
     }
     case "rotate-ccw": {
       const next = handlePlayKey(session, "ArrowUp");
