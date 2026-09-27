@@ -14,6 +14,8 @@ export type GameState = {
   piece: ActivePiece | null;
   nextPiece: PieceKind;
   bag?: BagState;
+  holdPiece?: PieceKind | null;
+  holdLocked?: boolean;
 };
 
 export type TickGravityResult = {
@@ -31,6 +33,8 @@ export function createGameState(
     grid: createEmptyPlayfield(),
     piece: spawnPiece(activeKind),
     nextPiece: nextKind,
+    holdPiece: null,
+    holdLocked: false,
   };
   if (bag !== undefined) {
     state.bag = bag;
@@ -38,7 +42,7 @@ export function createGameState(
   return state;
 }
 
-function canPlacePiece(piece: ActivePiece, grid: Playfield): boolean {
+export function canPlacePiece(piece: ActivePiece, grid: Playfield): boolean {
   for (const { x, y } of getPieceCells(piece)) {
     if (!isInsidePlayfield(x, y)) {
       return false;
@@ -64,20 +68,24 @@ export function tickGravity(state: GameState): TickGravityResult {
         piece: down.piece,
         nextPiece: state.nextPiece,
         ...(state.bag !== undefined ? { bag: state.bag } : {}),
+        holdPiece: state.holdPiece ?? null,
+        holdLocked: state.holdLocked ?? false,
       },
       linesCleared: 0,
       gameOver: false,
     };
   }
 
-  return finishLockAndRespawn(down.grid, state.nextPiece, state.bag);
+  return finishLockAndRespawn(down.grid, state);
 }
 
 function finishLockAndRespawn(
   lockedGrid: Playfield,
-  nextPiece: PieceKind,
-  bag?: BagState,
+  beforeLock: GameState,
 ): TickGravityResult {
+  const nextPiece = beforeLock.nextPiece;
+  const bag = beforeLock.bag;
+  const holdPiece = beforeLock.holdPiece ?? null;
   const { grid: clearedGrid, linesCleared } = clearFullLines(lockedGrid);
   const spawned = spawnPiece(nextPiece);
 
@@ -88,6 +96,8 @@ function finishLockAndRespawn(
         piece: null,
         nextPiece,
         ...(bag !== undefined ? { bag } : {}),
+        holdPiece,
+        holdLocked: false,
       },
       linesCleared,
       gameOver: true,
@@ -102,6 +112,8 @@ function finishLockAndRespawn(
         piece: spawned,
         nextPiece: drawn.kind,
         bag: drawn.bag,
+        holdPiece,
+        holdLocked: false,
       },
       linesCleared,
       gameOver: false,
@@ -113,6 +125,8 @@ function finishLockAndRespawn(
       grid: clearedGrid,
       piece: spawned,
       nextPiece,
+      holdPiece,
+      holdLocked: false,
     },
     linesCleared,
     gameOver: false,
@@ -134,6 +148,6 @@ export function hardDrop(state: GameState): TickGravityResult {
       grid = down.grid;
       continue;
     }
-    return finishLockAndRespawn(down.grid, state.nextPiece, state.bag);
+    return finishLockAndRespawn(down.grid, state);
   }
 }

@@ -9,6 +9,8 @@ function stateWithPiece(state: GameState, piece: ActivePiece): GameState {
     piece,
     nextPiece: state.nextPiece,
     bag: state.bag,
+    holdPiece: state.holdPiece,
+    holdLocked: state.holdLocked,
   };
 }
 

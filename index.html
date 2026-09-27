@@ -67,6 +67,7 @@
     <main>
       <h1>Tetris</h1>
       <div class="boards">
+        <canvas id="hold-preview" aria-label="Hold piece preview"></canvas>
         <canvas id="playfield" aria-label="Tetris playfield"></canvas>
         <canvas id="next-preview" aria-label="Next piece preview"></canvas>
       </div>
@@ -74,6 +75,7 @@
       <p id="level">Level: 1</p>
       <p id="status">Loading…</p>
       <div class="touch-controls" aria-label="Mobile play controls">
+        <button type="button" data-play-action="hold">Hold</button>
         <button type="button" data-play-action="rotate-ccw">Rotate ↺</button>
         <button type="button" data-play-action="hard-drop">Drop ⬇</button>
         <button type="button" data-play-action="restart">Restart</button>

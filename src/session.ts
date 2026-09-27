@@ -1,5 +1,6 @@
 import { createBagState, DEFAULT_BAG_SEED, takeFromBag } from "./bag.js";
 import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
+import { swapHold } from "./hold.js";
 import { moveActivePiece, rotateActivePieceCounterClockwise } from "./input.js";
 import { addLineClearScore } from "./score.js";
 
@@ -74,6 +75,9 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
     case "ArrowUp":
       nextState = rotateActivePieceCounterClockwise(session.state);
       break;
+    case "KeyC":
+      nextState = swapHold(session.state);
+      break;
     default:
       return session;
   }
@@ -114,6 +118,19 @@ export function handlePlayAction(
         linesCleared: result.linesCleared,
         score: scoreAfterLineClear(session, result.linesCleared),
         totalLinesCleared: totalLinesAfterClear(session, result.linesCleared),
+      };
+    }
+    case "hold": {
+      const nextState = swapHold(session.state);
+      if (nextState === session.state) {
+        return session;
+      }
+      return {
+        state: nextState,
+        gameOver: false,
+        linesCleared: 0,
+        score: session.score ?? 0,
+        totalLinesCleared: session.totalLinesCleared,
       };
     }
     default:

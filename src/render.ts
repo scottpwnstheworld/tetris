@@ -8,6 +8,7 @@ export const CELL_SIZE_PX = 24;
 export const NEXT_PREVIEW_COLS = 4;
 export const NEXT_PREVIEW_ROWS = 4;
 export const NEXT_PREVIEW_FILL = "#5a9e7a";
+export const HOLD_PREVIEW_FILL = "#7a5a9e";
 
 const BACKGROUND_FILL = "#12151c";
 export const LOCKED_FILL = "#3d6b9e";
@@ -35,6 +36,12 @@ export function nextPreviewPixelSize(): { width: number; height: number } {
 }
 
 export function resizeNextPreviewCanvas(canvas: HTMLCanvasElement): void {
+  const { width, height } = nextPreviewPixelSize();
+  canvas.width = width;
+  canvas.height = height;
+}
+
+export function resizeHoldPreviewCanvas(canvas: HTMLCanvasElement): void {
   const { width, height } = nextPreviewPixelSize();
   canvas.width = width;
   canvas.height = height;
@@ -69,6 +76,25 @@ export function nextPreviewCells(
     x: x + offsetX,
     y: y + offsetY,
   }));
+}
+
+export function renderHoldPiecePreview(
+  ctx: CanvasRenderingContext2D,
+  kind: PieceKind | null,
+): void {
+  const { width, height } = nextPreviewPixelSize();
+
+  ctx.fillStyle = BACKGROUND_FILL;
+  ctx.fillRect(0, 0, width, height);
+
+  if (kind === null) {
+    return;
+  }
+
+  ctx.fillStyle = HOLD_PREVIEW_FILL;
+  for (const { x, y } of nextPreviewCells(kind)) {
+    ctx.fillRect(x * CELL_SIZE_PX, y * CELL_SIZE_PX, CELL_SIZE_PX, CELL_SIZE_PX);
+  }
 }
 
 export function renderNextPiecePreview(

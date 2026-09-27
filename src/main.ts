@@ -11,7 +11,9 @@ import {
   formatLevelText,
   formatScoreText,
   renderGameState,
+  renderHoldPiecePreview,
   renderNextPiecePreview,
+  resizeHoldPreviewCanvas,
   resizeNextPreviewCanvas,
   resizePlayfieldCanvas,
 } from "./render.js";
@@ -23,12 +25,16 @@ import {
 } from "./play-hints.js";
 
 const canvas = document.getElementById("playfield");
+const holdPreviewCanvas = document.getElementById("hold-preview");
 const nextPreviewCanvas = document.getElementById("next-preview");
 const status = document.getElementById("status");
 const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
 if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error("Missing #playfield canvas");
+}
+if (!(holdPreviewCanvas instanceof HTMLCanvasElement)) {
+  throw new Error("Missing #hold-preview canvas");
 }
 if (!(nextPreviewCanvas instanceof HTMLCanvasElement)) {
   throw new Error("Missing #next-preview canvas");
@@ -44,10 +50,15 @@ if (!(levelEl instanceof HTMLParagraphElement)) {
 }
 
 resizePlayfieldCanvas(canvas);
+resizeHoldPreviewCanvas(holdPreviewCanvas);
 resizeNextPreviewCanvas(nextPreviewCanvas);
 const ctx = canvas.getContext("2d");
 if (ctx === null) {
   throw new Error("Could not get 2d context");
+}
+const holdPreviewCtx = holdPreviewCanvas.getContext("2d");
+if (holdPreviewCtx === null) {
+  throw new Error("Could not get hold preview 2d context");
 }
 const nextPreviewCtx = nextPreviewCanvas.getContext("2d");
 if (nextPreviewCtx === null) {
@@ -71,6 +82,7 @@ function updateStatus(): void {
 
 function draw(): void {
   renderGameState(ctx, session.state);
+  renderHoldPiecePreview(holdPreviewCtx, session.state.holdPiece ?? null);
   renderNextPiecePreview(nextPreviewCtx, session.state.nextPiece);
   scoreEl.textContent = formatScoreText(session.score);
   levelEl.textContent = formatLevelText(
@@ -117,6 +129,12 @@ window.addEventListener("keydown", (event) => {
       syncGravityInterval();
       draw();
     }
+    return;
+  }
+  if (event.code === "KeyC") {
+    lastLinesCleared = 0;
+    session = handlePlayKey(session, "KeyC");
+    draw();
     return;
   }
   if (!event.key.startsWith("Arrow")) {

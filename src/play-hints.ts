@@ -1,5 +1,5 @@
 const IDLE_HINTS =
-  "Arrow keys: left/right/down move, up rotates counter-clockwise. On-screen buttons: rotate and hard drop (touch-friendly).";
+  "Arrow keys: left/right/down move, up rotates counter-clockwise. Press C or tap Hold to swap the hold piece (once per lock). On-screen buttons: hold, rotate, and hard drop (touch-friendly).";
 
 export function formatIdlePlayStatus(): string {
   return IDLE_HINTS;

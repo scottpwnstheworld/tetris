@@ -19,6 +19,12 @@ describe("formatIdlePlayStatus", () => {
     expect(text).toMatch(/hard[- ]?drop|drop/);
     expect(text).toMatch(/touch|button|screen/);
   });
+
+  it("mentions hold (keyboard C and hold control)", () => {
+    const text = formatIdlePlayStatus().toLowerCase();
+    expect(text).toMatch(/hold/);
+    expect(text).toMatch(/\bc\b|keyc/);
+  });
 });
 
 describe("formatLineClearStatus", () => {
