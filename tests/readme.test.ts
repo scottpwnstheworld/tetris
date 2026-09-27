@@ -39,4 +39,15 @@ describe("README run documentation", () => {
       /Goals and progress live in `while_you_were_gone\/data\/repos\/tetris\/`, not in this repo\./,
     );
   });
+
+  it("documents scoring rules including level-scaled line clears and drop bonuses", () => {
+    const lower = readme.toLowerCase();
+    expect(lower).toMatch(/##\s*scor/);
+    expect(readme).toMatch(/100/);
+    expect(readme).toMatch(/800/);
+    expect(lower).toMatch(/level/);
+    expect(lower).toMatch(/soft/);
+    expect(lower).toMatch(/hard/);
+    expect(lower).toMatch(/10/);
+  });
 });

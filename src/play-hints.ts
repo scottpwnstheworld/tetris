@@ -16,3 +16,12 @@ export function formatGameOverStatus(): string {
 export function formatPausedPlayStatus(): string {
   return "Paused — press Escape or tap Pause to resume.";
 }
+
+export function formatScoringRulesSummary(): string {
+  return (
+    "Scoring: line clears use guideline base awards (100 / 300 / 500 / 800 for 1–4 lines) " +
+    "multiplied by your active level (e.g. one line at level 2 = 200 points). " +
+    "Soft-drop (Arrow Down or Down button) earns 1 point per cell moved down; " +
+    "hard drop earns 2 points per cell. Level increases every 10 total lines cleared."
+  );
+}

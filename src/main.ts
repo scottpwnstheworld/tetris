@@ -23,6 +23,7 @@ import {
   formatIdlePlayStatus,
   formatLineClearStatus,
   formatPausedPlayStatus,
+  formatScoringRulesSummary,
 } from "./play-hints.js";
 
 const canvas = document.getElementById("playfield");
@@ -31,6 +32,7 @@ const nextPreviewCanvas = document.getElementById("next-preview");
 const status = document.getElementById("status");
 const scoreEl = document.getElementById("score");
 const levelEl = document.getElementById("level");
+const scoringRulesEl = document.getElementById("scoring-rules");
 if (!(canvas instanceof HTMLCanvasElement)) {
   throw new Error("Missing #playfield canvas");
 }
@@ -49,6 +51,11 @@ if (!(scoreEl instanceof HTMLParagraphElement)) {
 if (!(levelEl instanceof HTMLParagraphElement)) {
   throw new Error("Missing #level");
 }
+if (!(scoringRulesEl instanceof HTMLParagraphElement)) {
+  throw new Error("Missing #scoring-rules");
+}
+
+scoringRulesEl.textContent = formatScoringRulesSummary();
 
 resizePlayfieldCanvas(canvas);
 resizeHoldPreviewCanvas(holdPreviewCanvas);
