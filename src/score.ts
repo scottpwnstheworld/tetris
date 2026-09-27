@@ -13,3 +13,14 @@ export function pointsForLineClear(lines: number): number {
 export function addLineClearScore(currentScore: number, linesCleared: number): number {
   return currentScore + pointsForLineClear(linesCleared);
 }
+
+export function pointsForSoftDropCells(cells: number): number {
+  if (cells <= 0) {
+    return 0;
+  }
+  return cells;
+}
+
+export function addSoftDropScore(currentScore: number, cells: number): number {
+  return currentScore + pointsForSoftDropCells(cells);
+}

@@ -2,7 +2,7 @@ import { createBagState, DEFAULT_BAG_SEED, takeFromBag } from "./bag.js";
 import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
 import { swapHold } from "./hold.js";
 import { moveActivePiece, rotateActivePieceCounterClockwise } from "./input.js";
-import { addLineClearScore } from "./score.js";
+import { addLineClearScore, addSoftDropScore } from "./score.js";
 
 export type PlaySession = {
   state: GameState;
@@ -78,6 +78,7 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
   }
 
   let nextState: GameState;
+  let nextScore = session.score ?? 0;
   switch (key) {
     case "Escape":
       return togglePlayPause(session);
@@ -87,9 +88,17 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
     case "ArrowRight":
       nextState = moveActivePiece(session.state, 1, 0);
       break;
-    case "ArrowDown":
+    case "ArrowDown": {
+      const beforeY = session.state.piece?.y;
       nextState = moveActivePiece(session.state, 0, 1);
+      const afterY = nextState.piece?.y;
+      const cellsDropped =
+        beforeY !== undefined && afterY !== undefined && afterY > beforeY
+          ? afterY - beforeY
+          : 0;
+      nextScore = addSoftDropScore(session.score ?? 0, cellsDropped);
       break;
+    }
     case "ArrowUp":
       nextState = rotateActivePieceCounterClockwise(session.state);
       break;
@@ -103,7 +112,7 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
   return {
     state: nextState,
     gameOver: false,
-    score: session.score ?? 0,
+    score: nextScore,
     totalLinesCleared: session.totalLinesCleared,
     paused: session.paused,
   };
