@@ -9,6 +9,7 @@ export type PlaySession = {
   gameOver: boolean;
   score: number;
   totalLinesCleared: number;
+  paused: boolean;
 };
 
 function scoreAfterLineClear(session: PlaySession, linesCleared: number): number {
@@ -39,6 +40,17 @@ export function createPlaySession(): PlaySession {
     gameOver: false,
     score: 0,
     totalLinesCleared: 0,
+    paused: false,
+  };
+}
+
+export function togglePlayPause(session: PlaySession): PlaySession {
+  if (session.gameOver) {
+    return session;
+  }
+  return {
+    ...session,
+    paused: !session.paused,
   };
 }
 
@@ -61,8 +73,14 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
     return session;
   }
 
+  if (session.paused && key !== "Escape") {
+    return session;
+  }
+
   let nextState: GameState;
   switch (key) {
+    case "Escape":
+      return togglePlayPause(session);
     case "ArrowLeft":
       nextState = moveActivePiece(session.state, -1, 0);
       break;
@@ -87,6 +105,7 @@ export function handlePlayKey(session: PlaySession, key: string): PlaySession {
     gameOver: false,
     score: session.score ?? 0,
     totalLinesCleared: session.totalLinesCleared,
+    paused: session.paused,
   };
 }
 
@@ -98,7 +117,15 @@ export function handlePlayAction(
     return session;
   }
 
+  if (session.paused && action === "hard-drop") {
+    return session;
+  }
+
   switch (action) {
+    case "pause": {
+      const next = togglePlayPause(session);
+      return { ...next, linesCleared: 0 };
+    }
     case "restart": {
       if (!session.gameOver) {
         return session;
@@ -118,6 +145,7 @@ export function handlePlayAction(
         linesCleared: result.linesCleared,
         score: scoreAfterLineClear(session, result.linesCleared),
         totalLinesCleared: totalLinesAfterClear(session, result.linesCleared),
+        paused: session.paused,
       };
     }
     case "hold": {
@@ -131,6 +159,7 @@ export function handlePlayAction(
         linesCleared: 0,
         score: session.score ?? 0,
         totalLinesCleared: session.totalLinesCleared,
+        paused: session.paused,
       };
     }
     default:
@@ -139,6 +168,9 @@ export function handlePlayAction(
 }
 
 export function stepPlayGravity(session: PlaySession): StepPlayGravityResult {
+  if (session.paused) {
+    return { ...session, linesCleared: 0 };
+  }
   const result = tickGravity(session.state);
   return {
     state: result.state,
@@ -146,5 +178,6 @@ export function stepPlayGravity(session: PlaySession): StepPlayGravityResult {
     linesCleared: result.linesCleared,
     score: scoreAfterLineClear(session, result.linesCleared),
     totalLinesCleared: totalLinesAfterClear(session, result.linesCleared),
+    paused: session.paused,
   };
 }

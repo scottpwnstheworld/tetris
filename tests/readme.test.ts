@@ -28,6 +28,8 @@ describe("README run documentation", () => {
     expect(lower).toMatch(/drop/);
     expect(lower).toMatch(/restart|enter/);
     expect(lower).toMatch(/hold/);
+    expect(lower).toMatch(/pause/);
+    expect(lower).toMatch(/escape/);
   });
 
   it("does not point readers only at external WYWG data for how to run the game", () => {

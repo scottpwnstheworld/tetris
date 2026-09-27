@@ -22,6 +22,7 @@ import {
   formatGameOverStatus,
   formatIdlePlayStatus,
   formatLineClearStatus,
+  formatPausedPlayStatus,
 } from "./play-hints.js";
 
 const canvas = document.getElementById("playfield");
@@ -73,6 +74,10 @@ function updateStatus(): void {
     status.textContent = formatGameOverStatus();
     return;
   }
+  if (session.paused) {
+    status.textContent = formatPausedPlayStatus();
+    return;
+  }
   if (lastLinesCleared > 0) {
     status.textContent = formatLineClearStatus(lastLinesCleared);
     return;
@@ -99,7 +104,7 @@ function syncGravityInterval(): void {
   }
   const ms = gravityIntervalMs(session.totalLinesCleared);
   gravityTimer = window.setInterval(() => {
-    if (session.gameOver) {
+    if (session.gameOver || session.paused) {
       return;
     }
     const result = stepPlayGravity(session);
@@ -109,6 +114,7 @@ function syncGravityInterval(): void {
       gameOver: result.gameOver,
       score: result.score,
       totalLinesCleared: result.totalLinesCleared,
+      paused: result.paused,
     };
     if (result.linesCleared > 0) {
       syncGravityInterval();
@@ -121,6 +127,11 @@ draw();
 syncGravityInterval();
 
 window.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    session = handlePlayKey(session, "Escape");
+    draw();
+    return;
+  }
   if (event.key === "Enter") {
     const next = restartPlaySession(session);
     if (next !== session) {
@@ -168,6 +179,7 @@ function applyPlayAction(action: string): void {
       gameOver: result.gameOver,
       score: result.score,
       totalLinesCleared: result.totalLinesCleared,
+      paused: result.paused,
     };
     if (result.linesCleared > 0) {
       syncGravityInterval();

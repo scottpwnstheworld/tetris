@@ -12,3 +12,7 @@ export function formatLineClearStatus(linesCleared: number): string {
 export function formatGameOverStatus(): string {
   return "Game over — press Enter or tap Restart to play again.";
 }
+
+export function formatPausedPlayStatus(): string {
+  return "Paused — press Escape or tap Pause to resume.";
+}

@@ -4,6 +4,7 @@ import {
   formatGameOverStatus,
   formatIdlePlayStatus,
   formatLineClearStatus,
+  formatPausedPlayStatus,
 } from "../src/play-hints.js";
 
 describe("formatIdlePlayStatus", () => {
@@ -37,6 +38,17 @@ describe("formatLineClearStatus", () => {
   });
 });
 
+describe("formatPausedPlayStatus", () => {
+  it("is distinct from idle and game-over copy", () => {
+    const paused = formatPausedPlayStatus().toLowerCase();
+    const idle = formatIdlePlayStatus().toLowerCase();
+    const over = formatGameOverStatus().toLowerCase();
+    expect(paused).toMatch(/paused/);
+    expect(paused).not.toBe(idle);
+    expect(paused).not.toBe(over);
+  });
+});
+
 describe("formatGameOverStatus", () => {
   it("tells the player how to restart without reloading the page", () => {
     const text = formatGameOverStatus().toLowerCase();
@@ -53,6 +65,7 @@ describe("play hints wiring", () => {
     expect(mainSource).toMatch(/formatIdlePlayStatus\s*\(/);
     expect(mainSource).toMatch(/formatLineClearStatus\s*\(/);
     expect(mainSource).toMatch(/formatGameOverStatus\s*\(/);
+    expect(mainSource).toMatch(/formatPausedPlayStatus\s*\(/);
     expect(mainSource).not.toMatch(
       /Arrow keys: left\/right\/down move, up rotates counter-clockwise\./,
     );
