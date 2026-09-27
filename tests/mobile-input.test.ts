@@ -94,6 +94,7 @@ describe("hardDrop", () => {
       state: ended,
       linesCleared: 0,
       gameOver: false,
+      cellsDropped: 0,
     });
   });
 });

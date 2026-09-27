@@ -2,7 +2,7 @@ import { createBagState, DEFAULT_BAG_SEED, takeFromBag } from "./bag.js";
 import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
 import { swapHold } from "./hold.js";
 import { moveActivePiece, rotateActivePieceCounterClockwise } from "./input.js";
-import { addLineClearScore, addSoftDropScore } from "./score.js";
+import { addHardDropScore, addLineClearScore, addSoftDropScore } from "./score.js";
 
 export type PlaySession = {
   state: GameState;
@@ -168,11 +168,15 @@ export function handlePlayAction(
     }
     case "hard-drop": {
       const result = hardDrop(session.state);
+      const score = addHardDropScore(
+        scoreAfterLineClear(session, result.linesCleared),
+        result.cellsDropped,
+      );
       return {
         state: result.state,
         gameOver: result.gameOver,
         linesCleared: result.linesCleared,
-        score: scoreAfterLineClear(session, result.linesCleared),
+        score,
         totalLinesCleared: totalLinesAfterClear(session, result.linesCleared),
         paused: session.paused,
       };

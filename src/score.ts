@@ -24,3 +24,14 @@ export function pointsForSoftDropCells(cells: number): number {
 export function addSoftDropScore(currentScore: number, cells: number): number {
   return currentScore + pointsForSoftDropCells(cells);
 }
+
+export function pointsForHardDropCells(cells: number): number {
+  if (cells <= 0) {
+    return 0;
+  }
+  return cells * 2;
+}
+
+export function addHardDropScore(currentScore: number, cells: number): number {
+  return currentScore + pointsForHardDropCells(cells);
+}

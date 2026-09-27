@@ -22,6 +22,7 @@ export type TickGravityResult = {
   state: GameState;
   linesCleared: number;
   gameOver: boolean;
+  cellsDropped: number;
 };
 
 export function createGameState(
@@ -57,7 +58,7 @@ export function canPlacePiece(piece: ActivePiece, grid: Playfield): boolean {
 export function tickGravity(state: GameState): TickGravityResult {
   const piece = state.piece;
   if (piece === null) {
-    return { state, linesCleared: 0, gameOver: false };
+    return { state, linesCleared: 0, gameOver: false, cellsDropped: 0 };
   }
 
   const down = stepDown(piece, state.grid);
@@ -73,6 +74,7 @@ export function tickGravity(state: GameState): TickGravityResult {
       },
       linesCleared: 0,
       gameOver: false,
+      cellsDropped: 0,
     };
   }
 
@@ -101,6 +103,7 @@ function finishLockAndRespawn(
       },
       linesCleared,
       gameOver: true,
+      cellsDropped: 0,
     };
   }
 
@@ -117,6 +120,7 @@ function finishLockAndRespawn(
       },
       linesCleared,
       gameOver: false,
+      cellsDropped: 0,
     };
   }
 
@@ -130,15 +134,17 @@ function finishLockAndRespawn(
     },
     linesCleared,
     gameOver: false,
+    cellsDropped: 0,
   };
 }
 
 export function hardDrop(state: GameState): TickGravityResult {
   const piece = state.piece;
   if (piece === null) {
-    return { state, linesCleared: 0, gameOver: false };
+    return { state, linesCleared: 0, gameOver: false, cellsDropped: 0 };
   }
 
+  const startY = piece.y;
   let current = piece;
   let grid = state.grid;
   for (;;) {
@@ -148,6 +154,8 @@ export function hardDrop(state: GameState): TickGravityResult {
       grid = down.grid;
       continue;
     }
-    return finishLockAndRespawn(down.grid, state);
+    const cellsDropped = current.y - startY;
+    const locked = finishLockAndRespawn(down.grid, state);
+    return { ...locked, cellsDropped };
   }
 }
