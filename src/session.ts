@@ -1,5 +1,6 @@
 import { createBagState, DEFAULT_BAG_SEED, takeFromBag } from "./bag.js";
 import { createGameState, hardDrop, tickGravity, type GameState } from "./game.js";
+import { levelFromTotalLines } from "./gravity-speed.js";
 import { swapHold } from "./hold.js";
 import {
   moveActivePiece,
@@ -21,7 +22,8 @@ function scoreAfterLineClear(session: PlaySession, linesCleared: number): number
   if (linesCleared <= 0) {
     return current;
   }
-  return addLineClearScore(current, linesCleared);
+  const level = levelFromTotalLines(session.totalLinesCleared ?? 0);
+  return addLineClearScore(current, linesCleared, level);
 }
 
 function totalLinesAfterClear(session: PlaySession, linesCleared: number): number {

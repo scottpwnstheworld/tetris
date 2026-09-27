@@ -6,12 +6,24 @@ const LINE_CLEAR_POINTS: Record<number, number> = {
   4: 800,
 };
 
-export function pointsForLineClear(lines: number): number {
-  return LINE_CLEAR_POINTS[lines] ?? 0;
+function effectiveLineClearLevel(level?: number): number {
+  if (level === undefined || level <= 0) {
+    return 1;
+  }
+  return level;
 }
 
-export function addLineClearScore(currentScore: number, linesCleared: number): number {
-  return currentScore + pointsForLineClear(linesCleared);
+export function pointsForLineClear(lines: number, level?: number): number {
+  const base = LINE_CLEAR_POINTS[lines] ?? 0;
+  return base * effectiveLineClearLevel(level);
+}
+
+export function addLineClearScore(
+  currentScore: number,
+  linesCleared: number,
+  level?: number,
+): number {
+  return currentScore + pointsForLineClear(linesCleared, level);
 }
 
 export function pointsForSoftDropCells(cells: number): number {
